@@ -8,7 +8,7 @@
 #include <iostream>
 #include "ui_Corruptor.h"
 
-int corruptFile(std::string, std::string, int, int, int);
+int corruptFile(std::string, std::string, int, int, int, int);
 
 class CorruptorWindow : public QMainWindow
 {

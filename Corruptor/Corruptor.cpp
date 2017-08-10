@@ -2,15 +2,13 @@
 
 unsigned long long llrand() {
 	unsigned long long r = 0;
-
 	for (int i = 0; i < 5; ++i) {
 		r = (r << 15) | (rand() & 0x7FFF);
 	}
-
 	return r & 0xFFFFFFFFFFFFFFFFULL;
 }
 
-int corruptFile(std::string ifname, std::string ofname, int corruptionType, int numCorruptions, int numProtected) {
+int corruptFile(std::string ifname, std::string ofname, int numCorruptions, int corruptionType=0, int headerSize=0, int footerSize=0) {
 	std::ifstream inFile(ifname, std::ios::binary | std::ios::ate);
 	std::ifstream::pos_type len = inFile.tellg();
 	std::vector<char> data(len);
@@ -22,26 +20,17 @@ int corruptFile(std::string ifname, std::string ofname, int corruptionType, int 
 	switch (corruptionType) {
 	case 0:
 		for (int i = 0; i < numCorruptions; ++i) {
-			data[numProtected + llrand() % (data.size() - numProtected)] = rand() % 256;
+			data[headerSize + llrand() % (data.size() - headerSize - footerSize)] = rand() % 256;
 		}
 		break;
 	case 1:
 		for (int i = 0; i < numCorruptions; ++i) {
-			data.insert(data.begin() + numProtected + llrand() % (data.size() - numProtected), rand() % 256);
+			data.insert(data.begin() + headerSize + llrand() % (data.size() - headerSize - footerSize), rand() % 256);
 		}
 		break;
 	case 2:
 		for (int i = 0; i < numCorruptions; ++i) {
-			data.erase(data.begin() + numProtected + llrand() % (data.size() - numProtected));
-		}
-		break;
-	case 3:
-		for (int i = 0; i < numCorruptions; ++i) {
-			int index1 = numProtected + llrand() % (data.size() - numProtected);
-			int index2 = numProtected + llrand() % (data.size() - numProtected);
-			int temp = data[index1];
-			data[index1] = data[index2];
-			data[index2] = temp;
+			data.erase(data.begin() + headerSize + llrand() % (data.size() - headerSize - footerSize));
 		}
 		break;
 	}
@@ -80,8 +69,9 @@ void CorruptorWindow::corruptButtonClicked() {
 	corruptFile(
 		ui.inFileLineEdit->text().toStdString(), 
 		ui.outFileLineEdit->text().toStdString(),
-		ui.corruptionTypeCombox->currentIndex(),
 		ui.numCorruptionsSpinner->value(),
-		ui.numProtectedBytesSpinner->value()
+		ui.corruptionTypeCombox->currentIndex(),
+		ui.headerBytesSpinner->value(),
+		ui.footerBytesSpinner->value()
 	);
 }
