@@ -18,7 +18,6 @@ int corruptFile(std::string ifname, std::string ofname, int corruptionType, int 
 	inFile.read(&data[0], len);
 	inFile.close();
 
-	std::cout << "test" << std::endl;
 	std::srand(time(NULL));
 	switch (corruptionType) {
 	case 0:
