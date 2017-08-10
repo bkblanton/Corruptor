@@ -6,7 +6,7 @@
 #include <ctime>
 #include <random>
 #include <iostream>
-#include "ui_Corruptor.h"
+#include "ui_Corruptor.h" //Compiled ui file
 
 int corruptFile(std::string, std::string, int, int, int, int);
 
